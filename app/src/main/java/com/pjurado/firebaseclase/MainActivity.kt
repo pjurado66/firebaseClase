@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.pjurado.firebaseclase.ListaContactos
 import com.pjurado.firebaseclase.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     binding.tvNombre.text = user?.displayName.toString()
+                    startActivity(Intent(this, ListaContactos::class.java))
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
