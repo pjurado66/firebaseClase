@@ -1,17 +1,19 @@
 package com.pjurado.recyclerviewobjeto
 
-import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.pjurado.firebaseclase.DetallePersona
 import com.pjurado.firebaseclase.ListaContactos
 import com.pjurado.firebaseclase.R
 import com.pjurado.firebaseclase.databinding.ItemContactoBinding
 
-class ContactosAdapter(val directorio: ArrayList<Contacto>, val mcontext: ListaContactos)
+class ContactosAdapter(
+    val directorio: ArrayList<Contacto>,
+    val mcontext: ListaContactos,
+    val idList: ArrayList<String>
+)
     : RecyclerView.Adapter<ContactosAdapter.ContactoViewHolder>() {
 
     class ContactoViewHolder(val binding: ItemContactoBinding): RecyclerView.ViewHolder(binding.root) {
@@ -28,6 +30,13 @@ class ContactosAdapter(val directorio: ArrayList<Contacto>, val mcontext: ListaC
         holder.binding.tvNombre.text = directorio[position].nombre
         holder.binding.tvEmail.text = directorio[position].email
         holder.binding.imageView.setImageResource(R.drawable.persona)
+
+        holder.binding.root.setOnClickListener {
+            val intent = Intent(mcontext, DetallePersona::class.java)
+            intent.putExtra("persona", directorio[position])
+            intent.putExtra("id", idList[position])
+            mcontext.startActivity(intent)
+        }
 
 
     }

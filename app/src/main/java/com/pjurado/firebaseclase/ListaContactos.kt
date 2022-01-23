@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.pjurado.firebaseclase.databinding.ActivityListaContactosBinding
@@ -30,7 +28,7 @@ class ListaContactos : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerContactos.layoutManager = layoutManager
 
-        adapter = ContactosAdapter(directorio, this)
+        adapter = ContactosAdapter(directorio, this, idList)
         binding.recyclerContactos.adapter = adapter
         tocaRecycler()
         binding.floatingActionButton.setOnClickListener {
