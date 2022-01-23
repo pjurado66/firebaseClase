@@ -2,6 +2,10 @@ package com.pjurado.firebaseclase
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,31 +17,52 @@ import com.pjurado.recyclerviewobjeto.Contacto
 import com.pjurado.recyclerviewobjeto.ContactosAdapter
 
 class ListaContactos : AppCompatActivity() {
-    var directorio: ArrayList<Contacto> = ArrayList()
+    private lateinit var directorio: MutableList<Contacto>
     var idList: ArrayList<String> = ArrayList()
     private lateinit var binding: ActivityListaContactosBinding
     val db = Firebase.firestore
     lateinit var adapter: ContactosAdapter
+    private val viewModelContactos: ContactosViewModel by lazy {
+        ViewModelProvider(this).get(ContactosViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityListaContactosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        creaDatos()
 
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerContactos.layoutManager = layoutManager
 
-        adapter = ContactosAdapter(directorio, this, idList)
+        adapter = ContactosAdapter(this, idList)
         binding.recyclerContactos.adapter = adapter
+
+        viewModelContactos.isLoading.observe(this, Observer {
+            if (it){
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            else{
+                binding.progressBar.visibility = View.INVISIBLE
+            }
+        })
+
+        viewModelContactos.getContactos().observe(
+            this, Observer {
+                directorio = it
+                adapter.setDirectorio(directorio)
+                adapter.notifyDataSetChanged()
+        })
+
         tocaRecycler()
         binding.floatingActionButton.setOnClickListener {
             val contacto = Contacto("Pedro Jurado", "987123456", "pjurado@gmail.com", 0)
             db.collection("Contactos")
                 .add(contacto)
                 .addOnSuccessListener { ref ->
+                    contacto.id = ref.id
+                    ref.set(contacto)
                     directorio.add(contacto)
-                    idList.add(ref.id)
                     adapter.notifyDataSetChanged()
                 }
                 .addOnFailureListener{ e ->
@@ -67,7 +92,7 @@ class ListaContactos : AppCompatActivity() {
                         .delete()
                         .addOnSuccessListener {
                             directorio.removeAt(viewHolder.adapterPosition)
-                            idList.removeAt(viewHolder.adapterPosition)
+
                             adapter.notifyItemRemoved(viewHolder.adapterPosition)
                             Snackbar.make(binding.root, "borrado", Snackbar.LENGTH_SHORT)
                                 .show()
@@ -84,22 +109,7 @@ class ListaContactos : AppCompatActivity() {
     }
 
     private fun creaDatos() {
-        db.collection("Contactos")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val contacto = document.toObject(Contacto::class.java)
-                    directorio.add(contacto)
-                    idList.add(document.id)
-                    Snackbar.make(binding.root, contacto.nombre + " se ha añadido", Snackbar.LENGTH_SHORT)
-                        .show()
-                    adapter.notifyDataSetChanged()
-                }
-            }
-            .addOnFailureListener { exception ->
-                Snackbar.make(binding.root, exception.toString(), Snackbar.LENGTH_SHORT)
-                    .show()
-            }
+
 /*
         directorio.add(Contacto("Pedro Jurado", "987123456", "pjurado@gmail.com", 0))
         directorio.add(Contacto("Pedro Jurado", "987123456", "pjurado@gmail.com", 0))

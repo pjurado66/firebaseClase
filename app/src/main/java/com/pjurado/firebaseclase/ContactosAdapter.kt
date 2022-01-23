@@ -10,12 +10,12 @@ import com.pjurado.firebaseclase.R
 import com.pjurado.firebaseclase.databinding.ItemContactoBinding
 
 class ContactosAdapter(
-    val directorio: ArrayList<Contacto>,
+
     val mcontext: ListaContactos,
     val idList: ArrayList<String>
 )
     : RecyclerView.Adapter<ContactosAdapter.ContactoViewHolder>() {
-
+    private var directorio = mutableListOf<Contacto>()
     class ContactoViewHolder(val binding: ItemContactoBinding): RecyclerView.ViewHolder(binding.root) {
 
     }
@@ -34,7 +34,7 @@ class ContactosAdapter(
         holder.binding.root.setOnClickListener {
             val intent = Intent(mcontext, DetallePersona::class.java)
             intent.putExtra("persona", directorio[position])
-            intent.putExtra("id", idList[position])
+            //intent.putExtra("id", idList[position])
             mcontext.startActivity(intent)
         }
 
@@ -42,7 +42,16 @@ class ContactosAdapter(
     }
 
     override fun getItemCount(): Int {
-        return directorio.size
+        if (directorio.size > 0){
+            return directorio.size
+        }
+        else{
+            return 0
+        }
+    }
+
+    fun setDirectorio(lista: MutableList<Contacto>) {
+        directorio = lista
     }
 
 }

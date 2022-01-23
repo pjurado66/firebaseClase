@@ -16,7 +16,7 @@ class DetallePersona : AppCompatActivity() {
         setContentView(binding.root)
 
         val persona: Contacto = intent.extras?.get("persona") as Contacto
-        val id = intent.extras?.getString("id")
+        val id = persona.id
 
         binding.etNombre.setText(persona.nombre)
         binding.etEmail.setText(persona.email)
